@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    .site-container {
+        @apply max-w-6xl mx-auto px-4 sm:px-6 lg:px-8;
+    }
+
+    .section-block {
+        @apply py-12 sm:py-16;
+    }
+
+    .section-title {
+        @apply text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 dark:text-white;
+    }
+
+    .section-subtitle {
+        @apply mt-2 text-sm sm:text-base text-gray-600 dark:text-zinc-400;
+    }
+
+    .card-panel {
+        @apply rounded-2xl border border-gray-200 bg-white dark:border-zinc-800 dark:bg-zinc-900/70 backdrop-blur-sm shadow-sm;
+    }
+
+    .card-body {
+        @apply p-5 sm:p-6;
+    }
+
+    .soft-link {
+        @apply text-gray-700 hover:text-black dark:text-zinc-300 dark:hover:text-white transition-colors duration-200;
+    }
+
+    .primary-btn {
+        @apply inline-flex items-center justify-center rounded-xl bg-gray-900 text-white dark:bg-white dark:text-zinc-900 px-4 py-2 text-sm font-medium hover:opacity-90 transition;
+    }
+
+    .secondary-btn {
+        @apply inline-flex items-center justify-center rounded-xl border border-gray-300 bg-white text-gray-900 hover:bg-gray-100 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800 px-4 py-2 text-sm font-medium transition;
+    }
+
+    .tag-pill {
+        @apply inline-flex items-center rounded-full border border-gray-300 bg-gray-100 text-gray-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 px-3 py-1 text-xs font-medium;
+    }
+
+    .reveal-up {
+        @apply opacity-0 translate-y-4 transition duration-700;
+    }
+
+    .reveal-up.show {
+        @apply opacity-100 translate-y-0;
+    }
+
+    .interactive-card {
+        @apply transition duration-300 hover:-translate-y-1 hover:shadow-lg;
+    }
+}
