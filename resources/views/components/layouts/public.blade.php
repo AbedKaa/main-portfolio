@@ -50,6 +50,10 @@
         html.theme-preload *::after {
             transition: none !important;
         }
+
+        [x-cloak] {
+            display: none !important;
+        }
     </style>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -63,10 +67,10 @@
 
 <body data-theme-scope="public"
     class="min-h-screen bg-gray-50 text-gray-900 transition-colors duration-300 dark:bg-zinc-950 dark:text-white">
-    <header
+    <header x-data="{ mobileMenuOpen: false }"
         class="border-b border-gray-200 bg-white/80 backdrop-blur transition-colors duration-300 dark:border-zinc-800 dark:bg-zinc-950/80">
         <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
-            <a href="{{ route('home') }}" class="text-lg font-semibold text-gray-900 dark:text-white">
+            <a href="{{ route('home') }}" class="shrink-0 text-lg font-semibold text-gray-900 dark:text-white">
                 {{ $settings->full_name ?? ($settings->name ?? 'Abed') }}
             </a>
 
@@ -76,7 +80,7 @@
                     : 'text-sm text-gray-600 transition hover:text-gray-900 dark:text-zinc-300 dark:hover:text-white';
             @endphp
 
-            <nav class="flex flex-wrap items-center gap-4">
+            <nav class="hidden sm:flex sm:flex-1 items-center justify-end gap-4 lg:gap-5">
                 <a href="{{ route('home') }}" class="{{ $linkClass(request()->routeIs('home')) }}">Home</a>
 
                 <a href="{{ route('projects.public.index') }}"
@@ -94,16 +98,74 @@
 
                 <a href="{{ route('contact') }}" class="{{ $linkClass(request()->routeIs('contact')) }}">Contact</a>
 
-                <span class="mx-1 text-gray-300 dark:text-zinc-700">|</span>
+                <span class="mx-1 shrink-0 text-gray-300 dark:text-zinc-700">|</span>
 
                 <a href="{{ route('login') }}" class="{{ $linkClass(false) }}">Admin</a>
 
                 <button onclick="toggleTheme()"
-                    class="ml-2 inline-flex items-center justify-center rounded-xl border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-900 transition hover:bg-gray-100 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800">
+                    class="ml-2 inline-flex shrink-0 items-center justify-center rounded-xl border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-900 transition hover:bg-gray-100 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800">
                     Toggle
                 </button>
             </nav>
+
+            <button type="button"
+                class="inline-flex items-center justify-center rounded-xl border border-gray-300 bg-white p-2 text-gray-900 transition hover:bg-gray-100 sm:hidden dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800"
+                @click="mobileMenuOpen = !mobileMenuOpen" :aria-expanded="mobileMenuOpen.toString()"
+                aria-controls="mobile-public-nav" aria-label="Toggle navigation">
+                <svg x-show="!mobileMenuOpen" x-cloak xmlns="http://www.w3.org/2000/svg" fill="none"
+                    viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-5 w-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                </svg>
+                <svg x-show="mobileMenuOpen" x-cloak xmlns="http://www.w3.org/2000/svg" fill="none"
+                    viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-5 w-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+            </button>
         </div>
+
+        <nav id="mobile-public-nav" x-cloak x-show="mobileMenuOpen" x-transition
+            class="border-t border-gray-200 px-4 py-4 sm:hidden dark:border-zinc-800">
+            <div class="mx-auto flex max-w-6xl flex-col gap-2">
+                <a href="{{ route('home') }}" @click="mobileMenuOpen = false"
+                    class="rounded-xl px-3 py-2 {{ request()->routeIs('home') ? 'bg-gray-100 text-gray-900 dark:bg-zinc-900 dark:text-white' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-zinc-300 dark:hover:bg-zinc-900 dark:hover:text-white' }}">
+                    Home
+                </a>
+
+                <a href="{{ route('projects.public.index') }}" @click="mobileMenuOpen = false"
+                    class="rounded-xl px-3 py-2 {{ request()->routeIs('projects.public.*') ? 'bg-gray-100 text-gray-900 dark:bg-zinc-900 dark:text-white' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-zinc-300 dark:hover:bg-zinc-900 dark:hover:text-white' }}">
+                    Projects
+                </a>
+
+                <a href="{{ route('about') }}" @click="mobileMenuOpen = false"
+                    class="rounded-xl px-3 py-2 {{ request()->routeIs('about') ? 'bg-gray-100 text-gray-900 dark:bg-zinc-900 dark:text-white' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-zinc-300 dark:hover:bg-zinc-900 dark:hover:text-white' }}">
+                    About
+                </a>
+
+                @if ($settings->blog_enabled ?? true)
+                    <a href="{{ route('blog.index') }}" @click="mobileMenuOpen = false"
+                        class="rounded-xl px-3 py-2 {{ request()->routeIs('blog.*') ? 'bg-gray-100 text-gray-900 dark:bg-zinc-900 dark:text-white' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-zinc-300 dark:hover:bg-zinc-900 dark:hover:text-white' }}">
+                        Blog
+                    </a>
+                @endif
+
+                <a href="{{ route('contact') }}" @click="mobileMenuOpen = false"
+                    class="rounded-xl px-3 py-2 {{ request()->routeIs('contact') ? 'bg-gray-100 text-gray-900 dark:bg-zinc-900 dark:text-white' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-zinc-300 dark:hover:bg-zinc-900 dark:hover:text-white' }}">
+                    Contact
+                </a>
+
+                <div class="mt-2 grid grid-cols-2 gap-2">
+                    <a href="{{ route('login') }}" @click="mobileMenuOpen = false"
+                        class="inline-flex items-center justify-center rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-900 transition hover:bg-gray-100 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800">
+                        Admin
+                    </a>
+
+                    <button type="button" onclick="toggleTheme()"
+                        class="inline-flex items-center justify-center rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-900 transition hover:bg-gray-100 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800">
+                        Toggle
+                    </button>
+                </div>
+            </div>
+        </nav>
     </header>
 
     <main class="site-container section-block">
