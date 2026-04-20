@@ -1,9 +1,10 @@
 <x-layouts.admin title="Edit Certificate">
     <x-admin.page-header title="Edit Certificate"
-        description="Update the certificate details, issue date, link, and visibility." />
+        description="Update the certificate details, image, issue date, link, and visibility." />
 
     <div class="max-w-4xl">
-        <form method="POST" action="{{ route('certificates.update', $certificate) }}" class="space-y-6">
+        <form method="POST" action="{{ route('certificates.update', $certificate) }}" enctype="multipart/form-data"
+            class="space-y-6">
             @csrf
             @method('PUT')
 

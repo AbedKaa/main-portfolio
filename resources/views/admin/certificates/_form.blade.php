@@ -53,6 +53,36 @@
         @enderror
     </div>
 
+    <div>
+        <label for="certificate_image" class="mb-2 block text-sm font-medium text-zinc-800 dark:text-zinc-100">
+            Certificate Image
+        </label>
+
+        <input id="certificate_image" name="certificate_image" type="file" accept="image/*"
+            onchange="previewCertificateImage(event)"
+            class="w-full rounded-xl border border-zinc-300 bg-white px-4 py-2.5 text-sm text-zinc-900 file:mr-4 file:rounded-lg file:border-0 file:bg-zinc-900 file:px-4 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-zinc-800 dark:border-zinc-700 dark:bg-zinc-950 dark:text-white dark:file:bg-white dark:file:text-zinc-900 dark:hover:file:bg-zinc-200">
+
+        <p class="mt-2 text-xs text-zinc-500 dark:text-zinc-400">
+            Upload an image of the certificate. This will be shown on the public credential detail page.
+        </p>
+
+        @error('certificate_image')
+            <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+        @enderror
+
+        <div id="certificate-image-preview-wrapper"
+            class="mt-4 {{ $isEdit && !empty($c->certificate_image) ? '' : 'hidden' }}">
+            <p class="mb-2 text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+                Image Preview
+            </p>
+
+            <img id="certificate-image-preview"
+                src="{{ $isEdit && !empty($c->certificate_image) ? asset('storage/' . $c->certificate_image) : '' }}"
+                alt="Certificate image preview"
+                class="w-full max-w-md rounded-xl border border-zinc-200 object-cover dark:border-zinc-700">
+        </div>
+    </div>
+
     <div class="grid gap-6 md:grid-cols-2">
         <div>
             <label for="sort_order" class="mb-2 block text-sm font-medium text-zinc-800 dark:text-zinc-100">
@@ -84,3 +114,24 @@
         </div>
     </div>
 </div>
+
+<script>
+    function previewCertificateImage(event) {
+        const file = event.target.files[0];
+        const previewWrapper = document.getElementById('certificate-image-preview-wrapper');
+        const previewImage = document.getElementById('certificate-image-preview');
+
+        if (!file) {
+            return;
+        }
+
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+            previewImage.src = e.target.result;
+            previewWrapper.classList.remove('hidden');
+        };
+
+        reader.readAsDataURL(file);
+    }
+</script>

@@ -33,7 +33,9 @@ Route::get('/', function () {
             ->get();
     }
 
-    return view('home', compact('featuredProjects'));
+    $experienceCount = Experience::where('is_visible', true)->count();
+
+    return view('home', compact('featuredProjects', 'experienceCount'));
 })->name('home');
 
 Route::get('/dashboard', function () {
@@ -89,6 +91,14 @@ Route::get('/about', function () {
 
     return view('about', compact('skills', 'experiences', 'certificates'));
 })->name('about');
+
+Route::get('/certificates/{slug}', function ($slug) {
+    $certificate = Certificate::where('slug', $slug)
+        ->where('is_visible', true)
+        ->firstOrFail();
+
+    return view('certificates.show', compact('certificate'));
+})->name('certificates.public.show');
 
 Route::get('/contact', function () {
     return view('contact');

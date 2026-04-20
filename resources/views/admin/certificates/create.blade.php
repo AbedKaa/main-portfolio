@@ -3,7 +3,7 @@
         description="Add a certificate, course completion, or professional achievement to your portfolio." />
 
     <div class="max-w-4xl">
-        <form method="POST" action="{{ route('certificates.store') }}" class="space-y-6">
+        <form method="POST" action="{{ route('certificates.store') }}" enctype="multipart/form-data" class="space-y-6">
             @csrf
 
             <div class="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">

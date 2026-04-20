@@ -61,8 +61,47 @@
         </div>
 
         @if ($projects->hasPages())
-            <div class="mt-10">
-                {{ $projects->links() }}
+            <div class="mt-10 flex justify-center">
+                <nav
+                    class="inline-flex items-center gap-2 rounded-2xl border border-gray-200 bg-white/70 p-2 shadow-sm backdrop-blur dark:border-zinc-800 dark:bg-zinc-900/70">
+                    @if ($projects->onFirstPage())
+                        <span
+                            class="inline-flex h-10 items-center justify-center rounded-xl px-4 text-sm font-medium text-gray-400 dark:text-zinc-600">
+                            ←
+                        </span>
+                    @else
+                        <a href="{{ $projects->previousPageUrl() }}"
+                            class="inline-flex h-10 items-center justify-center rounded-xl px-4 text-sm font-medium text-gray-600 transition hover:bg-gray-100 hover:text-gray-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white">
+                            ←
+                        </a>
+                    @endif
+
+                    @foreach ($projects->getUrlRange(1, $projects->lastPage()) as $page => $url)
+                        @if ($page == $projects->currentPage())
+                            <span
+                                class="inline-flex h-10 min-w-10 items-center justify-center rounded-xl bg-gray-900 px-3 text-sm font-semibold text-white dark:bg-white dark:text-zinc-900">
+                                {{ $page }}
+                            </span>
+                        @else
+                            <a href="{{ $url }}"
+                                class="inline-flex h-10 min-w-10 items-center justify-center rounded-xl px-3 text-sm font-medium text-gray-600 transition hover:bg-gray-100 hover:text-gray-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white">
+                                {{ $page }}
+                            </a>
+                        @endif
+                    @endforeach
+
+                    @if ($projects->hasMorePages())
+                        <a href="{{ $projects->nextPageUrl() }}"
+                            class="inline-flex h-10 items-center justify-center rounded-xl px-4 text-sm font-medium text-gray-600 transition hover:bg-gray-100 hover:text-gray-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white">
+                            →
+                        </a>
+                    @else
+                        <span
+                            class="inline-flex h-10 items-center justify-center rounded-xl px-4 text-sm font-medium text-gray-400 dark:text-zinc-600">
+                            →
+                        </span>
+                    @endif
+                </nav>
             </div>
         @endif
     </section>

@@ -149,9 +149,9 @@
                                     @endif
                                 </div>
 
-                                @if ($c->credential_url)
-                                    <a class="mt-4 inline-flex items-center text-sm font-medium text-gray-700 hover:text-black dark:text-zinc-300 dark:hover:text-white transition"
-                                        href="{{ $c->credential_url }}" target="_blank">
+                                @if ($c->slug)
+                                    <a class="mt-4 inline-flex items-center text-sm font-medium text-gray-700 transition hover:text-black dark:text-zinc-300 dark:hover:text-white"
+                                        href="{{ route('certificates.public.show', $c->slug) }}">
                                         View Credential →
                                     </a>
                                 @endif
