@@ -11,6 +11,7 @@ class SiteSettingController extends Controller
     public function edit()
     {
         $settings = SiteSetting::findOrFail(1);
+
         return view('admin.settings.edit', compact('settings'));
     }
 
@@ -26,24 +27,24 @@ class SiteSettingController extends Controller
             'github_url' => ['nullable', 'url', 'max:255'],
             'linkedin_url' => ['nullable', 'url', 'max:255'],
             'email' => ['nullable', 'email', 'max:255'],
-            'profile_image' => ['nullable', 'image', 'max:2048'],
-            'cv_file' => ['nullable', 'mimes:pdf', 'max:5120'],
+
+            'profile_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'cv_file' => ['nullable', 'file', 'mimes:pdf', 'max:5120'],
+            'og_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+
             'site_title' => ['nullable', 'string', 'max:255'],
             'meta_description' => ['nullable', 'string', 'max:255'],
-            'og_image' => ['nullable', 'image', 'max:4096'],
             'blog_enabled' => ['nullable', 'boolean'],
         ]);
 
         $data['blog_enabled'] = $request->boolean('blog_enabled');
 
         if ($request->hasFile('profile_image')) {
-            $path = $request->file('profile_image')->store('profile', 'public');
-            $data['profile_image'] = $path;
+            $data['profile_image'] = $request->file('profile_image')->store('profile', 'public');
         }
 
         if ($request->hasFile('cv_file')) {
-            $path = $request->file('cv_file')->store('cv', 'public');
-            $data['cv_file'] = $path;
+            $data['cv_file'] = $request->file('cv_file')->store('cv', 'public');
         }
 
         if ($request->hasFile('og_image')) {

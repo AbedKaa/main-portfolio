@@ -29,7 +29,7 @@ class CertificateController extends Controller
             'issuer' => ['nullable', 'string', 'max:255'],
             'issue_date' => ['nullable', 'date'],
             'credential_url' => ['nullable', 'url', 'max:255'],
-            'certificate_image' => ['nullable', 'image', 'max:4096'],
+            'certificate_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
             'is_visible' => ['nullable', 'boolean'],
         ]);
@@ -59,7 +59,7 @@ class CertificateController extends Controller
             'issuer' => ['nullable', 'string', 'max:255'],
             'issue_date' => ['nullable', 'date'],
             'credential_url' => ['nullable', 'url', 'max:255'],
-            'certificate_image' => ['nullable', 'image', 'max:4096'],
+            'certificate_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
             'is_visible' => ['nullable', 'boolean'],
         ]);

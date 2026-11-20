@@ -121,7 +121,6 @@
 
                 <span class="mx-1 shrink-0 text-gray-300 dark:text-zinc-700">|</span>
 
-                <a href="{{ route('login') }}" class="{{ $linkClass(false) }}">Admin</a>
 
                 <button onclick="toggleTheme()"
                     class="ml-2 inline-flex shrink-0 items-center justify-center rounded-xl border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-900 transition hover:bg-gray-100 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800">
@@ -176,11 +175,6 @@
                 </a>
 
                 <div class="mt-2 grid grid-cols-2 gap-2">
-                    <a href="{{ route('login') }}" @click="mobileMenuOpen = false"
-                        class="inline-flex items-center justify-center rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-900 transition hover:bg-gray-100 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800">
-                        Admin
-                    </a>
-
                     <button type="button" onclick="toggleTheme()"
                         class="inline-flex items-center justify-center rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-900 transition hover:bg-gray-100 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800">
                         Toggle

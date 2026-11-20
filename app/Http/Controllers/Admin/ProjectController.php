@@ -11,8 +11,8 @@ class ProjectController extends Controller
 {
     public function index(Request $request)
     {
-        $status = $request->get('status');
-
+        $status = $request->query('status');
+        
         $projects = Project::query()
             ->when($status === 'published', function ($query) {
                 $query->where('is_published', true);
@@ -42,7 +42,7 @@ class ProjectController extends Controller
             'tech_stack' => ['nullable', 'string', 'max:255'],
             'github_url' => ['nullable', 'url', 'max:255'],
             'demo_url' => ['nullable', 'url', 'max:255'],
-            'cover_image' => ['nullable', 'image', 'max:4096'],
+            'cover_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'is_published' => ['nullable', 'boolean'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
             'is_featured' => ['nullable', 'boolean'],
@@ -51,9 +51,10 @@ class ProjectController extends Controller
         $data['is_featured'] = (bool) ($data['is_featured'] ?? false);
         $data['slug'] = Str::slug($data['title']);
 
-        // ensure unique slug
+        // Ensure unique slug
         $baseSlug = $data['slug'];
         $i = 1;
+
         while (Project::where('slug', $data['slug'])->exists()) {
             $data['slug'] = $baseSlug . '-' . $i;
             $i++;
@@ -74,6 +75,7 @@ class ProjectController extends Controller
     public function edit(Project $project)
     {
         $project->load('images');
+
         return view('admin.projects.edit', compact('project'));
     }
 
@@ -86,7 +88,7 @@ class ProjectController extends Controller
             'tech_stack' => ['nullable', 'string', 'max:255'],
             'github_url' => ['nullable', 'url', 'max:255'],
             'demo_url' => ['nullable', 'url', 'max:255'],
-            'cover_image' => ['nullable', 'image', 'max:4096'],
+            'cover_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'is_published' => ['nullable', 'boolean'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
             'is_featured' => ['nullable', 'boolean'],
@@ -97,10 +99,12 @@ class ProjectController extends Controller
             $slug = Str::slug($data['title']);
             $baseSlug = $slug;
             $i = 1;
+
             while (Project::where('slug', $slug)->where('id', '!=', $project->id)->exists()) {
                 $slug = $baseSlug . '-' . $i;
                 $i++;
             }
+
             $data['slug'] = $slug;
         }
 
@@ -108,10 +112,10 @@ class ProjectController extends Controller
         $data['sort_order'] = (int) ($data['sort_order'] ?? 0);
         $data['is_featured'] = (bool) ($data['is_featured'] ?? false);
 
-
         if ($request->hasFile('cover_image')) {
             $data['cover_image'] = $request->file('cover_image')->store('projects', 'public');
         }
+
         $project->update($data);
 
         return redirect()->route('projects.index')->with('success', 'Project updated.');
@@ -120,6 +124,7 @@ class ProjectController extends Controller
     public function destroy(Project $project)
     {
         $project->delete();
+
         return redirect()->route('projects.index')->with('success', 'Project deleted.');
     }
 }

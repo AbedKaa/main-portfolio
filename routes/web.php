@@ -104,8 +104,9 @@ Route::get('/contact', function () {
     return view('contact');
 })->name('contact');
 
-Route::post('/contact', [ContactMessageController::class, 'store'])->name('contact.store');
-
+Route::post('/contact', [ContactMessageController::class, 'store'])
+    ->middleware('throttle:3,1')
+    ->name('contact.store');
 Route::get('/blog', function () {
     $settings = \App\Models\SiteSetting::findOrFail(1);
 
@@ -155,7 +156,7 @@ Route::get('/robots.txt', function () {
 |--------------------------------------------------------------------------
 */
 
-Route::middleware(['auth'])->prefix('admin')->group(function () {
+Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/', function () {
         return view('admin.dashboard', [
             'stats' => [
