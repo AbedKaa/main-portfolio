@@ -8,8 +8,17 @@ use Illuminate\Support\Str;
 
 class ProjectSeeder extends Seeder
 {
+    /**
+     * Local demo data only: creates 15 fake "Test Project" rows.
+     */
     public function run(): void
     {
+        if (app()->isProduction()) {
+            $this->command?->warn('ProjectSeeder skipped: it only creates fake demo projects.');
+
+            return;
+        }
+
         for ($i = 1; $i <= 15; $i++) {
             Project::create([
                 'title' => 'Test Project ' . $i,

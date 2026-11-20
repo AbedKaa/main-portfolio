@@ -18,11 +18,13 @@
         <priority>0.7</priority>
     </url>
 
-    <url>
-        <loc>{{ $baseUrl }}/blog</loc>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
-    </url>
+    @if ($blogEnabled)
+        <url>
+            <loc>{{ $baseUrl }}/blog</loc>
+            <changefreq>weekly</changefreq>
+            <priority>0.8</priority>
+        </url>
+    @endif
 
     <url>
         <loc>{{ $baseUrl }}/contact</loc>
@@ -38,6 +40,17 @@
             @endif
             <changefreq>monthly</changefreq>
             <priority>0.8</priority>
+        </url>
+    @endforeach
+
+    @foreach ($certificates as $c)
+        <url>
+            <loc>{{ $baseUrl }}/certificates/{{ $c->slug }}</loc>
+            @if ($c->updated_at)
+                <lastmod>{{ $c->updated_at->toAtomString() }}</lastmod>
+            @endif
+            <changefreq>yearly</changefreq>
+            <priority>0.5</priority>
         </url>
     @endforeach
 

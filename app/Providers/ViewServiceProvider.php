@@ -2,9 +2,9 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\View;
 use App\Models\SiteSetting;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\ServiceProvider;
 
 class ViewServiceProvider extends ServiceProvider
 {
@@ -15,9 +15,10 @@ class ViewServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        // SiteSetting::current() is memoised per request and cached, so this
+        // composer no longer runs a query for every view and component.
         View::composer('*', function ($view) {
-            $settings = SiteSetting::find(1);
-            $view->with('settings', $settings);
+            $view->with('settings', SiteSetting::current());
         });
     }
 }

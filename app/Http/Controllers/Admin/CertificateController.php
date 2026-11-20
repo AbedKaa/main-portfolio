@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Certificate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
+use App\Support\Slug;
 
 class CertificateController extends Controller
 {
@@ -28,13 +28,13 @@ class CertificateController extends Controller
             'title' => ['required', 'string', 'max:255'],
             'issuer' => ['nullable', 'string', 'max:255'],
             'issue_date' => ['nullable', 'date'],
-            'credential_url' => ['nullable', 'url', 'max:255'],
+            'credential_url' => ['nullable', 'url:http,https', 'max:255'],
             'certificate_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
             'is_visible' => ['nullable', 'boolean'],
         ]);
 
-        $data['slug'] = $this->generateUniqueSlug($data['title']);
+        $data['slug'] = Slug::unique(Certificate::class, $data['title']);
         $data['sort_order'] = (int) ($data['sort_order'] ?? 0);
         $data['is_visible'] = (bool) ($data['is_visible'] ?? false);
 
@@ -58,25 +58,27 @@ class CertificateController extends Controller
             'title' => ['required', 'string', 'max:255'],
             'issuer' => ['nullable', 'string', 'max:255'],
             'issue_date' => ['nullable', 'date'],
-            'credential_url' => ['nullable', 'url', 'max:255'],
+            'credential_url' => ['nullable', 'url:http,https', 'max:255'],
             'certificate_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
             'is_visible' => ['nullable', 'boolean'],
         ]);
 
-        if ($certificate->title !== $data['title'] || ! $certificate->slug) {
-            $data['slug'] = $this->generateUniqueSlug($data['title'], $certificate->id);
+        // Slugs are kept stable after creation; only older rows without one get it here.
+        if (! $certificate->slug) {
+            $data['slug'] = Slug::unique(Certificate::class, $data['title'], $certificate->id);
         }
 
         $data['sort_order'] = (int) ($data['sort_order'] ?? 0);
         $data['is_visible'] = (bool) ($data['is_visible'] ?? false);
 
         if ($request->hasFile('certificate_image')) {
-            if ($certificate->certificate_image) {
-                Storage::disk('public')->delete($certificate->certificate_image);
-            }
-
+            $oldImage = $certificate->certificate_image;
             $data['certificate_image'] = $request->file('certificate_image')->store('certificates', 'public');
+
+            if ($oldImage) {
+                Storage::disk('public')->delete($oldImage);
+            }
         }
 
         $certificate->update($data);
@@ -93,23 +95,5 @@ class CertificateController extends Controller
         $certificate->delete();
 
         return redirect()->route('certificates.index')->with('success', 'Certificate deleted.');
-    }
-
-    private function generateUniqueSlug(string $title, ?int $ignoreId = null): string
-    {
-        $baseSlug = Str::slug($title);
-        $slug = $baseSlug;
-        $counter = 2;
-
-        while (
-            Certificate::where('slug', $slug)
-            ->when($ignoreId, fn($query) => $query->where('id', '!=', $ignoreId))
-            ->exists()
-        ) {
-            $slug = $baseSlug . '-' . $counter;
-            $counter++;
-        }
-
-        return $slug;
     }
 }

@@ -20,11 +20,18 @@
                     <form method="POST" action="{{ route('contact.store') }}" class="space-y-5">
                         @csrf
 
+                        {{-- Spam protection: bots fill the hidden field and submit instantly. --}}
+                        <div class="hidden" aria-hidden="true">
+                            <label for="website">Leave this field empty</label>
+                            <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" value="">
+                        </div>
+                        <input type="hidden" name="form_token" value="{{ encrypt(now()->timestamp) }}">
+
                         <div>
                             <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-zinc-300">
                                 Name *
                             </label>
-                            <input name="name" value="{{ old('name') }}"
+                            <input name="name" maxlength="255" value="{{ old('name') }}"
                                 class="w-full rounded-xl border border-gray-300 bg-white px-3 py-2.5 text-gray-900 outline-none transition focus:border-gray-400 focus:ring-2 focus:ring-gray-200 dark:border-zinc-700 dark:bg-zinc-950 dark:text-white dark:focus:border-zinc-500 dark:focus:ring-zinc-800" />
                             @error('name')
                                 <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
@@ -35,7 +42,7 @@
                             <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-zinc-300">
                                 Email *
                             </label>
-                            <input name="email" value="{{ old('email') }}"
+                            <input type="email" name="email" maxlength="255" value="{{ old('email') }}"
                                 class="w-full rounded-xl border border-gray-300 bg-white px-3 py-2.5 text-gray-900 outline-none transition focus:border-gray-400 focus:ring-2 focus:ring-gray-200 dark:border-zinc-700 dark:bg-zinc-950 dark:text-white dark:focus:border-zinc-500 dark:focus:ring-zinc-800" />
                             @error('email')
                                 <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
@@ -46,7 +53,7 @@
                             <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-zinc-300">
                                 Subject
                             </label>
-                            <input name="subject" value="{{ old('subject') }}"
+                            <input name="subject" maxlength="255" value="{{ old('subject') }}"
                                 class="w-full rounded-xl border border-gray-300 bg-white px-3 py-2.5 text-gray-900 outline-none transition focus:border-gray-400 focus:ring-2 focus:ring-gray-200 dark:border-zinc-700 dark:bg-zinc-950 dark:text-white dark:focus:border-zinc-500 dark:focus:ring-zinc-800" />
                             @error('subject')
                                 <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
@@ -57,7 +64,7 @@
                             <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-zinc-300">
                                 Message *
                             </label>
-                            <textarea name="message" rows="6"
+                            <textarea name="message" rows="6" maxlength="5000"
                                 class="w-full rounded-xl border border-gray-300 bg-white px-3 py-2.5 text-gray-900 outline-none transition focus:border-gray-400 focus:ring-2 focus:ring-gray-200 dark:border-zinc-700 dark:bg-zinc-950 dark:text-white dark:focus:border-zinc-500 dark:focus:ring-zinc-800">{{ old('message') }}</textarea>
                             @error('message')
                                 <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>

@@ -55,6 +55,11 @@
                                     class="inline-flex items-center justify-center rounded-xl border border-zinc-300 bg-white px-3 py-1.5 text-sm font-medium text-zinc-900 transition hover:bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700">
                                     Open
                                 </a>
+
+                                <div class="mt-2">
+                                    <x-admin.delete-modal :action="route('messages.destroy', $m)" title="Delete message?"
+                                        message="This will permanently remove the message." />
+                                </div>
                             </td>
                         </tr>
                     @empty
@@ -73,4 +78,10 @@
             </table>
         </div>
     </div>
+
+    @if ($messages->hasPages())
+        <div class="mt-6">
+            {{ $messages->links() }}
+        </div>
+    @endif
 </x-layouts.admin>

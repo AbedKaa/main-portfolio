@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Post;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
+use App\Support\Slug;
 
 class PostController extends Controller
 {
@@ -30,14 +30,8 @@ class PostController extends Controller
             'sort_order' => ['nullable', 'integer', 'min:0'],
         ]);
 
-        $data['slug'] = Str::slug($data['title']);
-
-        $base = $data['slug'];
-        $i = 1;
-        while (Post::where('slug', $data['slug'])->exists()) {
-            $data['slug'] = $base . '-' . $i;
-            $i++;
-        }
+        // Set once on create so later title edits don't break shared links.
+        $data['slug'] = Slug::unique(Post::class, $data['title']);
 
         $data['is_published'] = (bool) ($data['is_published'] ?? false);
         $data['sort_order'] = (int) ($data['sort_order'] ?? 0);
@@ -63,15 +57,8 @@ class PostController extends Controller
             'sort_order' => ['nullable', 'integer', 'min:0'],
         ]);
 
-        if ($data['title'] !== $post->title) {
-            $slug = Str::slug($data['title']);
-            $base = $slug;
-            $i = 1;
-            while (Post::where('slug', $slug)->where('id', '!=', $post->id)->exists()) {
-                $slug = $base . '-' . $i;
-                $i++;
-            }
-            $data['slug'] = $slug;
+        if (! $post->slug) {
+            $data['slug'] = Slug::unique(Post::class, $data['title'], $post->id);
         }
 
         $wasPublished = (bool) $post->is_published;
