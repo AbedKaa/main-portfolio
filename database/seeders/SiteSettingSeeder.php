@@ -15,9 +15,9 @@ class SiteSettingSeeder extends Seeder
                 'full_name' => 'Abed Karakira',
                 'headline' => 'Junior Software Engineer',
                 'bio' => 'I build clean Laravel apps and real-world projects.',
-                'github_url' => 'https://github.com/',
-                'linkedin_url' => 'https://www.linkedin.com/',
-                'email' => 'you@example.com',
+                'github_url' => null,
+                'linkedin_url' => null,
+                'email' => null, // set in Admin > Settings
             ]
         );
     }

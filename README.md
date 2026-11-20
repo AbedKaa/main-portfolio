@@ -1,68 +1,85 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Abed Karakira — Portfolio
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Personal portfolio built with Laravel 12 (PHP 8.2+), Tailwind and Alpine. Public pages for projects, about, certificates, blog and contact, plus an admin panel to manage all content, uploads (project images, certificates, CV, profile photo, OG image) and contact messages.
 
-## About Laravel
+## Local development
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+```bash
+composer setup                 # install deps, create .env, generate key, migrate, build assets
+php artisan db:seed            # creates the site settings row
+php artisan app:create-admin   # create your admin login
+composer dev                   # serve + vite + logs
+```
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Optional demo data: `php artisan db:seed --class=ProjectSeeder` (skipped automatically in production).
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Run the tests with `composer test`.
 
-## Learning Laravel
+## Deploying to shared hosting (SSH)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### 1. Layout: keep the app outside the web root
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Upload the project to a folder **outside** `public_html`, for example `~/portfolio`, and make the web root serve `~/portfolio/public`:
 
-## Laravel Sponsors
+```bash
+# Hostinger-style: replace public_html with a link to the app's public folder
+mv ~/public_html ~/public_html.bak
+ln -s ~/portfolio/public ~/public_html
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Never upload the whole project into `public_html`: that makes `.env`, `database/database.sqlite` and `storage/logs` downloadable.
 
-### Premium Partners
+### 2. Production `.env`
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Copy `.env.example` to `.env` and set at least:
 
-## Contributing
+```dotenv
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://your-domain.com
+LOG_LEVEL=error
+SESSION_SECURE_COOKIE=true
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+MAIL_MAILER=smtp
+MAIL_HOST=...
+MAIL_PORT=465
+MAIL_SCHEME=smtps
+MAIL_USERNAME=...
+MAIL_PASSWORD=...
+MAIL_FROM_ADDRESS=...
+CONTACT_RECEIVER_EMAIL=you@your-domain.com
+```
 
-## Code of Conduct
+### 3. Install and build
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-
-Create/Update README.md with the commands you already used, like:
-composer install
-npm install && npm run build
-copy .env.example → .env
-set DB credentials
-php artisan key:generate
-php artisan migrate --seed
+```bash
+composer install --no-dev --optimize-autoloader
+npm ci && npm run build        # or build locally and upload public/build if the host has no Node
+php artisan key:generate       # first deploy only
+touch database/database.sqlite # first deploy only, when using SQLite
+php artisan migrate --force
+php artisan db:seed --force    # only creates the site settings row; safe to re-run
+php artisan app:create-admin   # first deploy only
 php artisan storage:link
+php artisan config:cache && php artisan route:cache && php artisan view:cache
+```
+
+If the host blocks symlinks and `storage:link` fails, uploaded images won't load. Ask the host to allow symlinks, or point the `public` disk's `root` at `public_html/storage`.
+
+### 4. Check after each deploy
+
+- `https://your-domain.com/.env` returns 404.
+- The contact form delivers a real email to `CONTACT_RECEIVER_EMAIL`, and replying goes to the visitor.
+- An uploaded image and the CV link load.
+- `/robots.txt` shows your domain in the `Sitemap:` line.
+- `composer audit` reports no advisories.
+
+### Updating
+
+```bash
+git pull
+composer install --no-dev --optimize-autoloader
+npm ci && npm run build
+php artisan migrate --force
+php artisan optimize:clear && php artisan config:cache && php artisan route:cache && php artisan view:cache
+```
